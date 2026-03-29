@@ -7,6 +7,20 @@ const Order = order(sequelize);
 app.use(express.json());
 sequelize.sync();
 
+// Simulates email confirmation for a promise-based delay when creating an order
+const sendEmailConfirmation = async (customerEmail, orderId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        emailSent: true,
+        to: customerEmail,
+        subject: `Order Confirmation - ${orderId}`,
+        sentAt: new Date().toISOString()
+      });
+    }, 2000); // 2 second promise-based delay
+  });
+};
+
 app.get('/status', (req, res) => {
   res.json({
     status: 'Running',
@@ -15,13 +29,49 @@ app.get('/status', (req, res) => {
 });
 
 app.post('/orders', async (req, res) => {
-  // Create a new order.
   try {
     const { orderId, customerEmail, items, totalPrice } = req.body;
-    const newOrder = await Order.create({ orderId, customerEmail, items, totalPrice });
+
+    // Input Validation - Check each field individually
+    if (!orderId) {
+      return res.status(400).json({
+        error: 'Missing required field: orderId'
+      });
+    }
+    if (!customerEmail) {
+      return res.status(400).json({
+        error: 'Missing required field: customerEmail'
+      });
+    }
+    if (!items) {
+      return res.status(400).json({
+        error: 'Missing required field: items'
+      });
+    }
+    if (!totalPrice) {
+      return res.status(400).json({
+        error: 'Missing required field: totalPrice'
+      });
+    }
+
+    // call promise-based email confirmation
+    const emailResult = await sendEmailConfirmation(customerEmail, orderId);
+    console.log(`Confirmation email sent to ${emailResult.to}`);
+
+    // Save order to database
+    const newOrder = await Order.create({
+      orderId: orderId,
+      customerEmail: customerEmail,
+      items: items,
+      totalPrice: totalPrice,
+      status: 'Pending'
+    });
+
     res.status(201).json({
       success: true,
-      order: newOrder
+      order: newOrder,
+      notification: emailResult,
+      message: 'Order created successfully'
     });
   } catch (error) {
     res.status(500).json({
