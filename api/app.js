@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const sequelize = require('./common/database');
-const defineUser = require('./common/models/User');
-const User = defineUser(sequelize);
+const order = require('./common/models/Order');
+const Order = order(sequelize);
 
 app.use(express.json());
 sequelize.sync();
