@@ -27,3 +27,6 @@ yarn-error.log*
 .env.*.local
 
 .vscode/
+
+# ignore database file because it is per developer environment
+*.db
