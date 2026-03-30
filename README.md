@@ -84,7 +84,9 @@ Creates a new order and sends confirmation email to the customerEmail provided i
 **HTTP Status Codes:**
 
 201 - Order created successfully
+
 400 - Missing or invalid required field
+
 500 - Server error
 
 ### 2. GET /orders
@@ -100,6 +102,7 @@ None
 **HTTP Status Codes:**
 
 200 - Success - orders retrieved
+
 500 - Server error
 
 ### 3. GET /orders/:id
@@ -116,7 +119,9 @@ Retrieves a specific order by its database ID. ID is naturally increasing and is
 **HTTP Status Codes:**
 
 200 - Success - order found
+
 404 - Order not found
+
 500 - Server error
 
 ### 4. PATCH /orders/:id
@@ -140,8 +145,11 @@ Updates an order's status. Move "Pending" to "Shipped".
 **HTTP Status Codes:**
 
 200 - Success - order updated
+
 400 - Missing status field
+
 404 - Order not found
+
 500 - Server error
 
 ### 5. DELETE /orders/:id
@@ -158,5 +166,7 @@ Deletes an order from the database based on its ID.
 **HTTP Status Codes:**
 
 200 - Success - order deleted
+
 404 - Order not found
+
 500 - Server error
