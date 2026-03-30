@@ -8,13 +8,13 @@ app.use(express.json());
 sequelize.sync();
 
 // Simulates email confirmation for a promise-based delay when creating an order
-const sendEmailConfirmation = async (customerEmail, orderId) => {
+const sendEmailConfirmation = async (customerEmail) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         emailSent: true,
         to: customerEmail,
-        subject: `Order Confirmation - ${orderId}`,
+        subject: `Order Confirmation for ${customerEmail}`,
         sentAt: new Date().toISOString()
       });
     }, 2000); // 2 second promise-based delay
@@ -30,14 +30,9 @@ app.get('/status', (req, res) => {
 
 app.post('/orders', async (req, res) => {
   try {
-    const { orderId, customerEmail, items, totalPrice } = req.body;
+    const { customerEmail, items, totalPrice } = req.body;
 
     // Input Validation - Check each field individually
-    if (!orderId) {
-      return res.status(400).json({
-        error: 'Missing required field: orderId'
-      });
-    }
     if (!customerEmail) {
       return res.status(400).json({
         error: 'Missing required field: customerEmail'
@@ -55,12 +50,11 @@ app.post('/orders', async (req, res) => {
     }
 
     // call promise-based email confirmation
-    const emailResult = await sendEmailConfirmation(customerEmail, orderId);
+    const emailResult = await sendEmailConfirmation(customerEmail);
     console.log(`Confirmation email sent to ${emailResult.to}`);
 
     // Save order to database
     const newOrder = await Order.create({
-      orderId: orderId,
       customerEmail: customerEmail,
       items: items,
       totalPrice: totalPrice,
@@ -122,7 +116,7 @@ app.get('/orders/:id', async (req, res) => {
 });
 
 app.patch('/orders/:id', async (req, res) => {
-  // Update an order status (e.g., "Pending" to "Shipped").
+  // Update an order status from "Pending" to "Shipped"
   try {
     const order = await Order.findByPk(req.params.id);
     if (!order) {
@@ -131,7 +125,13 @@ app.patch('/orders/:id', async (req, res) => {
       });
     }
     // Update the order status
-    order.status = req.body.status || order.status;
+    const { status } = req.body;
+    if (!status) {
+      return res.status(400).json({
+        error: 'Status field is required'
+      });
+    }
+    order.status = status;
     await order.save();
     res.status(200).json({
       success: true,
@@ -171,4 +171,3 @@ app.delete('/orders/:id', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
