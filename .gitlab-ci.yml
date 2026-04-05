@@ -43,7 +43,6 @@ deploy:
         "service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$SERVICE_ACCOUNT:generateAccessToken"
       }
       EOF
-
     # use wif to authenticate with gcp via service account impersonation
     - gcloud auth application-default login --impersonate-service-account=$SERVICE_ACCOUNT
     - gcloud container clusters get-credentials $GCP_CLUSTER_NAME --zone $GCP_CLUSTER_ZONE
