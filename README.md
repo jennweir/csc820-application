@@ -55,6 +55,18 @@ curl -X PATCH http://localhost:3000/orders/1 \
 curl -X DELETE http://localhost:3000/orders/1
 ```
 
+## Test the API with Jest
+
+First, ensure Jest is installed with `npm install --save-dev jest`
+
+Then configure npm scripts. In package.json file, update the scripts section to include:
+
+`"test": "jest"`
+
+`"coverage": "jest --coverage"`
+
+This will enable generation of a test coverage report.
+
 ## API Documentation
 
 ### 1. POST /orders
