@@ -1,4 +1,6 @@
 
+const app = require('../api/app');
+
 describe('GET-api-status-success', () => {
   it('should have a status code of 200', () => {
     const res = {
