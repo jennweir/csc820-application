@@ -1,3 +1,5 @@
+const app = require('../api/app');
+
 // Mock the order module and database module
 jest.mock('../api/common/database');
 jest.mock('../api/common/models/Order');
